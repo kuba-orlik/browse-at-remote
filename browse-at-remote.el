@@ -301,14 +301,18 @@ If HEAD is detached, return nil."
 (defun browse-at-remote--format-commit-url-as-stash (repo-url commithash)
   "Commit URL formatted for stash"
   (format "%s/commits/%s" (browse-at-remote--fix-repo-url-stash repo-url) commithash))
-
 (defun browse-at-remote--format-region-url-as-phabricator (repo-url location filename &optional linestart lineend)
   "URL formatted for Phabricator"
-  	(let* ((lines (cond
+    (let* ((lines (cond
                  (lineend (format "\$%d-%d" linestart lineend))
                  (linestart (format "\$%d" linestart))
-                 (t ""))))
-  (format "%s/browse/%s/%s%s" repo-url location filename lines)))
+                 (t "")))
+       (fixed-repo-url (cond
+         ((eq (length (split-string repo-url "/")) 6) (mapconcat 'identity (butlast (split-string repo-url "/") 1) "/"))
+         (t repo-url)
+         ))
+       )
+  (format "%s/browse/%s/%s%s" fixed-repo-url location filename lines)))
 
 (defun browse-at-remote--format-commit-url-as-phabricator (repo-url commithash)
   "Commit URL formatted for Phabricator"
